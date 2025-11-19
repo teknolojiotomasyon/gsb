@@ -1,0 +1,2 @@
+# gsb
+GSB Çelik Zimmet
