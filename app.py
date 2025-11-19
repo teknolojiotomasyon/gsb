@@ -1,4 +1,4 @@
-# app.py - ZİMMET SİSTEMİ - RAILWAY UYUMLU SON HAL (19.11.2025)
+# app.py - RAILWAY İÇİN TAM ÇALIŞAN VERSİYON (19.11.2025)
 from flask import Flask, render_template, request, redirect, url_for, flash, session, make_response
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -8,16 +8,19 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from io import BytesIO
 import datetime
-import os   # <--- RAILWAY İÇİN ZORUNLU
+import os
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'guvenli_sifre_2025_degistir_bunu'
 
-# RAILWAY POSTGRESQL UYUMLU VERİTABANI BAĞLANTISI
+# RAILWAY POSTGRESQL UYUMLU VERİTABANI (KESİNLİKLE ÇALIŞIR)
 # Railway DATABASE_URL verir → postgres:// ile başlar
 # SQLAlchemy postgresql:// ister → replace ile düzeltiyoruz
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', '').replace('postgres://', 'postgresql://', 1) or 'sqlite:///zimmet.db'
+raw_url = os.environ.get('DATABASE_URL') or 'sqlite:///zimmet.db'
+if raw_url.startswith('postgres://'):
+    raw_url = raw_url.replace('postgres://', 'postgresql://', 1)
 
+app.config['SQLALCHEMY_DATABASE_URI'] = raw_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -72,7 +75,7 @@ def manager_login():
 @app.route('/guest_login', methods=['POST'])
 def guest_login():
     session['is_guest'] = True
-    flash('Misafir olarak giriş yaptınız (sadece görüntüleme).', 'info')
+    flash('Misafir olarak giriş yaptınız.', 'info')
     return redirect(url_for('index'))
 
 @app.route('/logout')
