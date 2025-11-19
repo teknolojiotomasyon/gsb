@@ -1,4 +1,4 @@
-# app.py - RAILWAY İÇİN TAM ÇALIŞAN VERSİYON (19.11.2025)
+# app.py - ZİMMET SİSTEMİ - RAILWAY + NEON POSTGRES UYUMLU (19.11.2025)
 from flask import Flask, render_template, request, redirect, url_for, flash, session, make_response
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -13,9 +13,8 @@ import os
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'guvenli_sifre_2025_degistir_bunu'
 
-# RAILWAY POSTGRESQL UYUMLU VERİTABANI (KESİNLİKLE ÇALIŞIR)
-# Railway DATABASE_URL verir → postgres:// ile başlar
-# SQLAlchemy postgresql:// ister → replace ile düzeltiyoruz
+# RAILWAY + NEON POSTGRESQL UYUMLU VERİTABANI BAĞLANTISI
+# Railway ve Neon postgres:// verir, SQLAlchemy postgresql:// ister
 raw_url = os.environ.get('DATABASE_URL') or 'sqlite:///zimmet.db'
 if raw_url.startswith('postgres://'):
     raw_url = raw_url.replace('postgres://', 'postgresql://', 1)
@@ -84,7 +83,7 @@ def logout():
     flash('Çıkış yapıldı.', 'info')
     return redirect(url_for('index'))
 
-# —— MİSAFİR + YÖNETİCİ GÖREBİLİR ——
+# MİSAFİR + YÖNETİCİ GÖREBİLİR
 @app.route('/personnel')
 def personnel_list():
     if not (session.get('is_manager') or session.get('is_guest')):
@@ -137,7 +136,7 @@ def print_card(person_id):
     response.headers['Content-Disposition'] = f'attachment; filename=zimmet_{person.name}_{person.surname}.pdf'
     return response
 
-# —— SADECE YÖNETİCİ ——
+# SADECE YÖNETİCİ
 @app.route('/equipment')
 @login_required_manager
 def equipment_list():
